@@ -17,3 +17,9 @@ dependencies = [
 
 [project.scripts]
 color-by-number = "main:main"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+]

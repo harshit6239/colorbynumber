@@ -1,0 +1,26 @@
+[project]
+name = "color-by-number-backend"
+version = "0.1.0"
+description = "Color by number backend API"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "httpx",
+    "PyJWT",
+    "python-multipart",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "respx>=0.22.0",
+    "pytest-anyio>=0.0.0",
+    "anyio[trio]",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: end-to-end tests that start a real pipeline subprocess"]

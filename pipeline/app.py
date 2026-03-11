@@ -16,6 +16,8 @@ from contextlib import asynccontextmanager
 from time import time
 from typing import Annotated
 
+import cv2
+import numpy as np
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Security, UploadFile
 from fastapi.security.api_key import APIKeyHeader
 
@@ -28,6 +30,8 @@ PIPELINE_API_KEY: str = os.environ["PIPELINE_API_KEY"]  # required — fail fast
 MAX_WORKERS: int = int(os.getenv("MAX_WORKERS", "1"))
 JOB_TTL_SECONDS: int = int(os.getenv("JOB_TTL_SECONDS", "300"))
 MAX_IMAGE_BYTES: int = int(os.getenv("MAX_IMAGE_BYTES", str(10 * 1024 * 1024)))
+MIN_IMAGE_PX: int = int(os.getenv("MIN_IMAGE_PX", "100"))   # min width AND height
+MAX_IMAGE_PX: int = int(os.getenv("MAX_IMAGE_PX", "8000"))  # max in either dimension
 
 ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
@@ -114,7 +118,7 @@ def health():
 async def submit_job(
     _: AuthDep,
     image: UploadFile = File(...),
-    k: int = Form(default=12, ge=2, le=32),
+    k: int = Form(default=12, ge=2, le=15),
     smooth_sigma: float = Form(default=3.0, ge=0.0, le=10.0),
     quality: str = Form(default="fast"),
 ):
@@ -129,12 +133,29 @@ async def submit_job(
             detail=f"Unsupported file type '{image.content_type}'. Allowed: jpeg, png, webp.",
         )
 
-    # Read and validate size
+    # Read and validate file size
     image_bytes = await image.read()
     if len(image_bytes) > MAX_IMAGE_BYTES:
         raise HTTPException(
             status_code=400,
             detail=f"File too large ({len(image_bytes):,} bytes). Max: {MAX_IMAGE_BYTES:,} bytes.",
+        )
+
+    # Decode and validate pixel dimensions
+    arr = np.frombuffer(image_bytes, dtype=np.uint8)
+    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise HTTPException(status_code=400, detail="Could not decode image. File may be corrupted.")
+    h, w = img.shape[:2]
+    if w < MIN_IMAGE_PX or h < MIN_IMAGE_PX:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image too small ({w}×{h} px). Minimum is {MIN_IMAGE_PX}×{MIN_IMAGE_PX} px.",
+        )
+    if w > MAX_IMAGE_PX or h > MAX_IMAGE_PX:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Image too large ({w}×{h} px). Maximum is {MAX_IMAGE_PX}×{MAX_IMAGE_PX} px.",
         )
 
     # Reject immediately if worker is busy
@@ -151,7 +172,7 @@ async def submit_job(
     }
 
     # Submit to thread pool (non-blocking)
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     loop.run_in_executor(
         _executor,
         _run_job,
