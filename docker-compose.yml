@@ -1,0 +1,12 @@
+services:
+    pipeline:
+        build:
+            context: ./pipeline
+        ports:
+            - "8000:8000"
+        environment:
+            PIPELINE_API_KEY: ${PIPELINE_API_KEY}
+            MAX_WORKERS: ${MAX_WORKERS:-1}
+            JOB_TTL_SECONDS: ${JOB_TTL_SECONDS:-300}
+            MAX_IMAGE_BYTES: ${MAX_IMAGE_BYTES:-10485760}
+        restart: unless-stopped

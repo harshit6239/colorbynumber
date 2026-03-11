@@ -1,0 +1,19 @@
+[project]
+name = "color-by-number"
+version = "0.1.0"
+description = "Color by number image processing pipeline"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "opencv-python",
+    "numpy",
+    "scikit-learn",
+    "matplotlib",
+    "pillow",
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+]
+
+[project.scripts]
+color-by-number = "main:main"
