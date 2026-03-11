@@ -6,9 +6,9 @@ Convert any photo into a paint-by-number template with numbered regions, a palet
 
 ```
 colorbynumber/
-├── pipeline/       # Image processing service (FastAPI)
-├── backend/        # Public API + session/rate-limit layer (FastAPI)
-├── frontend/       # Web UI (TBD)
+├── pipeline/       # Image processing service (FastAPI, port 8000)
+├── backend/        # Public API + session/rate-limit layer (FastAPI, port 8001)
+├── frontend/       # React + Vite SPA (port 5173) — deploys to Vercel
 ├── src/            # Core processing library (used by pipeline)
 ├── utils/
 └── main.py         # CLI entry point (dev / local use)
@@ -126,7 +126,7 @@ uv sync
 
 # Run dev server
 $env:PIPELINE_API_KEY="dev-key"
-uv run uvicorn app:app --reload --port 8001
+uv run uvicorn app:app --reload --port 8000
 
 # Run unit tests
 $env:PIPELINE_API_KEY="test-key"
@@ -139,11 +139,11 @@ uv run pytest tests/ -v
 cd backend
 uv sync
 
-# Run dev server (pipeline must already be running on 8001)
-$env:PIPELINE_URL="http://localhost:8001"
+# Run dev server (pipeline must already be running on 8000)
+$env:PIPELINE_URL="http://localhost:8000"
 $env:PIPELINE_API_KEY="dev-key"
 $env:JWT_SECRET="change-me-to-32-plus-random-bytes"
-uv run uvicorn app:app --reload --port 8000
+uv run uvicorn app:app --reload --port 8001
 
 # Run unit tests (no pipeline needed — uses mocks)
 uv run pytest tests/test_app.py -v
@@ -154,6 +154,27 @@ uv run pytest tests/test_integration.py -v
 # Run all tests
 uv run pytest tests/ -v
 ```
+
+### Frontend
+
+```powershell
+cd frontend
+npm install
+
+# Run dev server (proxies API calls to backend on :8001 automatically)
+npm run dev        # http://localhost:5173
+
+# Production build
+npm run build
+```
+
+**Env var**
+
+| Variable           | Notes                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| `VITE_BACKEND_URL` | Full URL of the deployed backend (no trailing slash). Omit for local dev — Vite proxy handles it. |
+
+---
 
 ### CLI (dev / local)
 
@@ -172,17 +193,22 @@ Output files are written to `outputs/`.
 # Terminal 1 — pipeline
 cd a:\CODE\colorbynumber\pipeline
 $env:PIPELINE_API_KEY="dev-key"
-uv run uvicorn app:app --port 8001
+uv run uvicorn app:app --port 8000
 
 # Terminal 2 — backend
 cd a:\CODE\colorbynumber\backend
-$env:PIPELINE_URL="http://localhost:8001"
+$env:PIPELINE_URL="http://localhost:8000"
 $env:PIPELINE_API_KEY="dev-key"
 $env:JWT_SECRET="change-me-to-32-plus-random-bytes"
-uv run uvicorn app:app --port 8000
+uv run uvicorn app:app --port 8001
+
+# Terminal 3 — frontend
+cd a:\CODE\colorbynumber\frontend
+npm run dev        # http://localhost:5173
 ```
 
-Then `POST http://localhost:8000/jobs` with a multipart form body containing the image.
+The Vite dev server automatically proxies `/jobs` and `/health` to `http://localhost:8001` (backend).  
+To override (e.g. point at a deployed backend), set `VITE_BACKEND_URL` in `frontend/.env`.
 
 ---
 
@@ -224,6 +250,23 @@ Optional overrides: `SESSION_TTL_SECONDS`, `RATE_LIMIT_JOBS`, `RATE_LIMIT_WINDOW
 
 > **Tip:** On Render free tier, services spin down after inactivity. Configure a cron monitor to `GET /health` every 10 minutes to keep the pipeline warm if needed.
 
+### frontend (Vercel)
+
+Connect the repo to Vercel and set the following:
+
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Root directory   | `frontend`      |
+| Build command    | `npm run build` |
+| Output directory | `dist`          |
+| Install command  | `npm install`   |
+
+**Env var to set in Vercel dashboard**
+
+- `VITE_BACKEND_URL` — full URL of your deployed backend, e.g. `https://colorbynumber-backend.onrender.com`
+
+Also set `ALLOW_ORIGINS` in the **backend** Render service to your Vercel domain, e.g. `https://colorbynumber.vercel.app`.
+
 ---
 
 ## Project structure (full)
@@ -233,6 +276,7 @@ colorbynumber/
 ├── main.py                         # CLI entry point
 ├── pyproject.toml                  # Root project (CLI deps)
 ├── README.md
+├── .env.example                    # All service env vars, clearly labelled
 ├── examples/
 │   └── image.png
 ├── outputs/                        # CLI output files (gitignored)
@@ -249,17 +293,36 @@ colorbynumber/
 │       └── cleanup.py
 ├── utils/
 │   └── io.py
-├── pipeline/                       # Pipeline service
+├── pipeline/                       # Pipeline service  (port 8000)
 │   ├── app.py                      # FastAPI app
 │   ├── main.py                     # run_pipeline() entry point
 │   ├── pyproject.toml
+│   ├── .env.example
 │   └── tests/
 │       └── test_app.py             # 25 unit tests
-└── backend/                        # Backend service
-    ├── app.py                      # FastAPI app
-    ├── pyproject.toml
-    └── tests/
-        ├── conftest.py
-        ├── test_app.py             # 24 unit tests (mocked pipeline)
-        └── test_integration.py     # 11 integration tests (real pipeline subprocess)
+├── backend/                        # Backend service  (port 8001)
+│   ├── app.py                      # FastAPI app
+│   ├── pyproject.toml
+│   ├── .env.example
+│   └── tests/
+│       ├── conftest.py
+│       ├── test_app.py             # unit tests (mocked pipeline)
+│       └── test_integration.py     # integration tests (real pipeline subprocess)
+└── frontend/                       # React + Vite SPA  (port 5173)
+    ├── index.html
+    ├── vite.config.js              # dev proxy → :8001
+    ├── vercel.json                 # SPA rewrite rule
+    ├── .env.example
+    ├── package.json
+    └── src/
+        ├── main.jsx
+        ├── App.jsx                 # Router (/, /generate, /support)
+        ├── App.css                 # All styles + dark mode tokens
+        ├── api.js                  # fetch wrapper + session token mgmt
+        ├── components/
+        │   └── Layout.jsx          # Sticky nav + dark-mode toggle
+        └── pages/
+            ├── Home.jsx            # Landing page
+            ├── Generate.jsx        # Upload → settings → results
+            └── Support.jsx         # Buy Me a Coffee page
 ```
