@@ -16,7 +16,7 @@ import numpy as np
 # Tunable constants
 MAX_DIMENSION = 1000   # px – images larger than this are downscaled
 MIN_DIMENSION = 50     # px – images smaller than this trigger a warning
-BLUR_KERNEL = (9, 9)   # Gaussian kernel; must be odd × odd
+BLUR_KERNEL = (7, 7)   # Gaussian kernel; must be odd × odd
 
 
 def _resize_to_max(img: np.ndarray, max_dim: int) -> np.ndarray:

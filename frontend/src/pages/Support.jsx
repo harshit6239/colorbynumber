@@ -3,17 +3,36 @@ export default function Support() {
         <div className="page">
             <div className="container support-container">
                 <div className="support-hero">
-                    <span
-                        className="support-icon"
+                    <div
+                        className="support-swatches"
                         aria-hidden="true"
                     >
-                        ☕
-                    </span>
-                    <h1 className="page-heading">Buy me a coffee</h1>
+                        <span
+                            className="support-swatch"
+                            style={{ background: "var(--sw-1)" }}
+                        />
+                        <span
+                            className="support-swatch"
+                            style={{ background: "var(--sw-2)" }}
+                        />
+                        <span
+                            className="support-swatch"
+                            style={{ background: "var(--sw-3)" }}
+                        />
+                        <span
+                            className="support-swatch"
+                            style={{ background: "var(--sw-4)" }}
+                        />
+                        <span
+                            className="support-swatch"
+                            style={{ background: "var(--sw-5)" }}
+                        />
+                    </div>
+                    <h1 className="page-heading">Support HueCraft</h1>
                     <p className="support-sub">
-                        Color by Number is free and will stay that way. If it
-                        saved you time or made your weekend art project more
-                        fun, a coffee keeps the server lights on.
+                        HueCraft is free and will stay that way. If it saved you
+                        time or made your weekend art project more fun, a coffee
+                        keeps the server lights on.
                     </p>
                 </div>
 
@@ -27,7 +46,7 @@ export default function Support() {
                             Every contribution — big or small — helps cover
                             hosting costs and motivates future improvements like
                             more palette options, SVG export, and print-ready
-                            layouts.
+                            layouts for HueCraft.
                         </p>
 
                         <div className="bmc-tiers">
@@ -37,8 +56,7 @@ export default function Support() {
                                 rel="noopener noreferrer"
                                 className="bmc-btn"
                             >
-                                <span aria-hidden="true">☕</span> Buy me a
-                                coffee — $5
+                                ☕ Buy me a coffee — $5
                             </a>
                             <a
                                 href="https://www.buymeacoffee.com"
@@ -46,8 +64,7 @@ export default function Support() {
                                 rel="noopener noreferrer"
                                 className="bmc-btn bmc-btn--muted"
                             >
-                                <span aria-hidden="true">🍕</span> Buy me a
-                                pizza — $10
+                                🍕 Buy me a pizza — $10
                             </a>
                         </div>
 
@@ -65,10 +82,10 @@ export default function Support() {
                         <ul className="fund-list">
                             <li>
                                 <span
-                                    className="fund-icon"
+                                    className="fund-num"
                                     aria-hidden="true"
                                 >
-                                    🖥
+                                    1
                                 </span>
                                 <div>
                                     <strong>Hosting</strong>
@@ -80,10 +97,10 @@ export default function Support() {
                             </li>
                             <li>
                                 <span
-                                    className="fund-icon"
+                                    className="fund-num"
                                     aria-hidden="true"
                                 >
-                                    ⚡
+                                    2
                                 </span>
                                 <div>
                                     <strong>Faster processing</strong>
@@ -95,10 +112,10 @@ export default function Support() {
                             </li>
                             <li>
                                 <span
-                                    className="fund-icon"
+                                    className="fund-num"
                                     aria-hidden="true"
                                 >
-                                    🎨
+                                    3
                                 </span>
                                 <div>
                                     <strong>New features</strong>
@@ -110,10 +127,10 @@ export default function Support() {
                             </li>
                             <li>
                                 <span
-                                    className="fund-icon"
+                                    className="fund-num"
                                     aria-hidden="true"
                                 >
-                                    🔓
+                                    4
                                 </span>
                                 <div>
                                     <strong>Stays free</strong>
@@ -127,9 +144,7 @@ export default function Support() {
                     </div>
                 </div>
 
-                <p className="support-thanks">
-                    Thank you for using Color by Number. ❤️
-                </p>
+                <p className="support-thanks">Thank you for using HueCraft.</p>
             </div>
         </div>
     );

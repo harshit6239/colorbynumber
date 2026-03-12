@@ -61,12 +61,30 @@ function DropZone({ preview, onFile }) {
                     />
                 ) : (
                     <>
-                        <span
+                        <div
                             className="drop-icon"
                             aria-hidden="true"
                         >
-                            🖼
-                        </span>
+                            <svg
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <rect
+                                    x="3"
+                                    y="3"
+                                    width="18"
+                                    height="18"
+                                    rx="2"
+                                    ry="2"
+                                />
+                                <circle
+                                    cx="8.5"
+                                    cy="8.5"
+                                    r="1.5"
+                                />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                        </div>
                         <p className="drop-label">Drop an image here</p>
                         <p className="drop-hint">
                             JPEG · PNG · WebP &nbsp;·&nbsp; max 10 MB
@@ -103,9 +121,15 @@ function Spinner({ label }) {
             aria-live="polite"
         >
             <div
-                className="spinner"
+                className="spinner-palette"
                 aria-hidden="true"
-            />
+            >
+                <span className="spinner-color" />
+                <span className="spinner-color" />
+                <span className="spinner-color" />
+                <span className="spinner-color" />
+                <span className="spinner-color" />
+            </div>
             <p className="spinner-label">{label}</p>
             <p className="spinner-hint">This may take 30–90 seconds.</p>
         </div>
@@ -279,7 +303,7 @@ export default function Generate() {
             <div className="page">
                 <div className="container">
                     <div className="results-header">
-                        <h2 className="page-heading">Your Template</h2>
+                        <h2 className="page-heading">Your HueCraft template</h2>
                         <button
                             className="btn-ghost"
                             onClick={handleReset}
@@ -298,9 +322,10 @@ export default function Generate() {
         <div className="page">
             <div className="container">
                 <header className="gen-header">
-                    <h2 className="page-heading">Generate Template</h2>
+                    <h2 className="page-heading">Generate your template</h2>
                     <p className="page-sub">
-                        Upload a photo and customise the settings below.
+                        Upload a photo, tune the palette, and let HueCraft do
+                        the rest.
                     </p>
                 </header>
 
