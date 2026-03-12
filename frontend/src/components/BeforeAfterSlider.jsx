@@ -1,11 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 
-export default function BeforeAfterSlider({
-    beforeSrc,
-    afterSrc,
-    beforeLabel = "Original photo",
-    afterLabel = "Paint-by-number template",
-}) {
+function Slide({ beforeSrc, afterSrc, beforeLabel, afterLabel }) {
     const [pos, setPos] = useState(50);
     const containerRef = useRef(null);
     const dragging = useRef(false);
@@ -54,7 +49,6 @@ export default function BeforeAfterSlider({
             }}
             onTouchStart={(e) => onStart(e.touches[0].clientX)}
         >
-            {/* After — full width, sits beneath */}
             <div className="ba-pane ba-pane--after">
                 {afterSrc ? (
                     <img
@@ -67,7 +61,6 @@ export default function BeforeAfterSlider({
                 )}
             </div>
 
-            {/* Before — clipped to the left of the handle */}
             <div
                 className="ba-pane ba-pane--before"
                 style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
@@ -83,7 +76,6 @@ export default function BeforeAfterSlider({
                 )}
             </div>
 
-            {/* Divider line + drag knob */}
             <div
                 className="ba-divider"
                 style={{ left: `${pos}%` }}
@@ -114,9 +106,88 @@ export default function BeforeAfterSlider({
                 </div>
             </div>
 
-            {/* Labels */}
             <span className="ba-label ba-label--before">{beforeLabel}</span>
             <span className="ba-label ba-label--after">{afterLabel}</span>
+        </div>
+    );
+}
+
+export default function BeforeAfterSlider({ slides }) {
+    const [current, setCurrent] = useState(0);
+    const total = slides.length;
+
+    const prev = () => setCurrent((c) => (c - 1 + total) % total);
+    const next = () => setCurrent((c) => (c + 1) % total);
+
+    return (
+        <div className="ba-carousel">
+            <div
+                className="ba-carousel-track"
+                style={{ transform: `translateX(-${current * 100}%)` }}
+            >
+                {slides.map((slide, i) => (
+                    <div
+                        className="ba-carousel-cell"
+                        key={i}
+                    >
+                        <Slide
+                            beforeSrc={slide.beforeSrc}
+                            afterSrc={slide.afterSrc}
+                            beforeLabel={slide.beforeLabel ?? "Original photo"}
+                            afterLabel={
+                                slide.afterLabel ?? "Paint-by-number template"
+                            }
+                        />
+                    </div>
+                ))}
+            </div>
+
+            {total > 1 && (
+                <>
+                    <button
+                        className="ba-nav ba-nav--prev"
+                        onClick={prev}
+                        aria-label="Previous"
+                    >
+                        <svg
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <polyline points="13,4 7,10 13,16" />
+                        </svg>
+                    </button>
+                    <button
+                        className="ba-nav ba-nav--next"
+                        onClick={next}
+                        aria-label="Next"
+                    >
+                        <svg
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <polyline points="7,4 13,10 7,16" />
+                        </svg>
+                    </button>
+                    <div className="ba-dots">
+                        {slides.map((_, i) => (
+                            <button
+                                key={i}
+                                className={`ba-dot${i === current ? " ba-dot--active" : ""}`}
+                                onClick={() => setCurrent(i)}
+                                aria-label={`Slide ${i + 1}`}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

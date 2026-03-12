@@ -53,8 +53,10 @@ export default function Home() {
                     From photo to paint-by-number
                 </h2>
                 <BeforeAfterSlider
-                    beforeSrc="/Before1.png"
-                    afterSrc="/After1.png"
+                    slides={[
+                        { beforeSrc: "/Before1.png", afterSrc: "/After1.png" },
+                        { beforeSrc: "/Before2.jpg", afterSrc: "/After2.png" },
+                    ]}
                 />
             </section>
 
