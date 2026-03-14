@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Generate from "./pages/Generate";
-import Support from "./pages/Support";
+// import Support from "./pages/Support";
 import "./App.css";
 
 export default function App() {
@@ -18,10 +18,10 @@ export default function App() {
                         path="/generate"
                         element={<Generate />}
                     />
-                    <Route
+                    {/* <Route
                         path="/support"
                         element={<Support />}
-                    />
+                    /> */}
                 </Route>
             </Routes>
         </BrowserRouter>

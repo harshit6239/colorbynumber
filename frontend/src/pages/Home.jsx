@@ -38,12 +38,12 @@ export default function Home() {
                             <polyline points="12 5 19 12 12 19" />
                         </svg>
                     </Link>
-                    <Link
+                    {/* <Link
                         to="/support"
                         className="hero-cta-ghost"
                     >
                         Support the project
-                    </Link>
+                    </Link> */}
                 </div>
             </section>
 

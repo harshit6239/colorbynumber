@@ -125,12 +125,12 @@ export default function Layout() {
                     >
                         Generate
                     </NavLink>
-                    <NavLink
+                    {/* <NavLink
                         to="/support"
                         className={linkClass}
                     >
                         Support
-                    </NavLink>
+                    </NavLink> */}
                 </div>
 
                 <button
