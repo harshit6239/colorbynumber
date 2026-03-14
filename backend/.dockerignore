@@ -2,10 +2,10 @@
 __pycache__
 *.pyc
 *.pyo
-outputs/*.png
-!outputs/.gitkeep
 .python-version
 uv.lock
-examples/
+.pytest_cache
 tests/
-conftest.py
+.env
+.env.*
+!.env.example
