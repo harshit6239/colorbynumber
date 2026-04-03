@@ -194,6 +194,36 @@ function ResultTabs({ result }) {
     );
 }
 
+function ComparePanel({ originalSrc, coloredB64 }) {
+    return (
+        <div className="compare-panel">
+            <h3 className="compare-heading">Original vs Colored Preview</h3>
+            <div className="compare-grid">
+                <div className="compare-cell">
+                    <span className="compare-label">Original</span>
+                    <div className="compare-img-wrap">
+                        <img
+                            src={originalSrc}
+                            alt="Original uploaded photo"
+                            className="compare-img"
+                        />
+                    </div>
+                </div>
+                <div className="compare-cell">
+                    <span className="compare-label">Colored Preview</span>
+                    <div className="compare-img-wrap">
+                        <img
+                            src={b64Src(coloredB64)}
+                            alt="Colored preview"
+                            className="compare-img"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // ─── Generate page ───────────────────────────────────────────────────────────
 
 export default function Generate() {
@@ -312,6 +342,10 @@ export default function Generate() {
                         </button>
                     </div>
                     <ResultTabs result={result} />
+                    <ComparePanel
+                        originalSrc={preview}
+                        coloredB64={result.colored_preview}
+                    />
                 </div>
             </div>
         );
